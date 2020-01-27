@@ -18,9 +18,9 @@
 		<!-- application -->
 		<div class="container" v-else>
 			<!-- playlist form -->
-			<label for="playlist1">Playlist 1 ID: {{playlist1Url}}</label>
+			<label for="playlist1">Playlist 1 link:</label>
 			<input v-model="playlist1Url" type="text" class="form-control mb-3" id="playlist1" aria-describedby="playlist1">
-			<label for="playlist1">Playlist 2 ID: {{playlist2Url}}</label>
+			<label for="playlist1">Playlist 2 link:</label>
 			<input v-model="playlist2Url" type="text" class="form-control mb-3" id="playlist2" aria-describedby="playlist2">
 			<!-- fetch controls -->
 			<button id="fetchPlaylists" v-on:click="fetchPlaylists" class="btn btn-success">Fetch playlists</button>
@@ -29,6 +29,9 @@
 			<!-- validation errors -->
 			<div v-show="playlistFetchErrors !== ''" class="alert alert-danger mt-3 mb-3" role="alert">
 				{{playlistFetchErrors}}
+			</div>
+			<div v-show="reAuthRequired" class="alert alert-warning mt-3 mb-3" role="alert">
+				<button id="authButton" v-on:click="doAuth" class="btn btn-success">Reconnect to Spotify</button>
 			</div>
 			<!-- playlist view -->
 			<div class="container mt-3 mb-3">

@@ -4,8 +4,8 @@ var app = new Vue({
 	el: '#app',
 	data: {
 		appTitle : config.appTitle,
-		playlist1Url : "37i9dQZF1DXec50AjHrNTq",
-		playlist2Url : "3mrM0ZsJ9o5qFYJT6IdpoH",
+		playlist1Url : "https://open.spotify.com/playlist/3mrM0ZsJ9o5qFYJT6IdpoH?si=IXP89EyfScK-1ix8fRnf7A",
+		playlist2Url : "https://open.spotify.com/playlist/6ff5TfwljOgOP3hZIBofqw?si=SeCzKAafTOyJ2YREjeDG5Q",
 		playlistFetchErrors : "",
 		playlist1 : {},
 		playlist2 : {},
@@ -13,6 +13,7 @@ var app = new Vue({
 		joinedPlaylist : [],
 		joinedPlaylistErrors : "",
 		showSongsFromPlaylist : false,
+		reAuthRequired : false
 	},
 	methods: {
 		doAuth: function(){
@@ -40,10 +41,22 @@ var app = new Vue({
 			// todo: fetch using complete url, for now just use the ids
 			this.playlistFetchErrors = "";
 			if(this.playlist1Url !== "" && this.playlist2Url !== ""){
-				this.fetchTracks(this.playlist1Url, '1');
-				this.fetchTracks(this.playlist2Url, '2');
+				var idMatch1 = [];
+				var idMatch2 = [];
+				try{
+					idMatch1 = this.playlist1Url.match(/https\:\/\/.*spotify\.com.*playlist\/(.*?)(\?|$|\/)/);
+					idMatch2 = this.playlist2Url.match(/https\:\/\/.*spotify\.com.*playlist\/(.*?)(\?|$|\/)/);
+						if(idMatch1[1] !== null && idMatch2[1] !== null){
+							this.fetchTracks(idMatch1[1], '1');
+							this.fetchTracks(idMatch2[1], '2');
+						}else{
+							this.playlistFetchErrors = "Invalid URL.";
+						}
+				} catch (e){
+					this.playlistFetchErrors = "Invalid URL.";
+				}
 			}else{
-				this.playlistFetchErrors = "Both URLs are mandatory";
+				this.playlistFetchErrors = "Both URLs are mandatory.";
 			}
 		}, 
 		getHashParams: function() {
@@ -83,8 +96,12 @@ var app = new Vue({
 					this.fetchReminaingTracks(response.body.tracks.next, playlistN);
 				}
 			}, response => {
+				if(response.status === 401){
+					this.reAuthRequired = true;
+				}else{
+					this.playlistFetchErrors += "\nPlaylist " + playlistN + ": Unable to fetch playlist data.";
+				}
 				console.error("There was an error while fetching " + url);
-				this.playlistFetchErrors += "\nUnable to fetch playlist data, try connecting to spotify again.";
 			});
 		},
 		fetchReminaingTracks: function(nextUrl, playlistN){
