@@ -40,6 +40,9 @@ var app = new Vue({
 		fetchPlaylists: function(){
 			// todo: fetch using complete url, for now just use the ids
 			this.playlistFetchErrors = "";
+			this.playlist1 = {};
+			this.playlist2 = {};
+			this.joinedPlaylist = [];
 			if(this.playlist1Url !== "" && this.playlist2Url !== ""){
 				var idMatch1 = [];
 				var idMatch2 = [];
@@ -114,6 +117,12 @@ var app = new Vue({
 				console.error("There was an error while fetching " + url);
 				this.playlistFetchErrors += "\nSomething went wrong while trying to fetch remaining tracks.";
 			});
+		},
+		openPlaylist1: function(){
+			window.open(this.playlist1Url, '_blank');
+		},
+		openPlaylist2: function(){
+			window.open(this.playlist2Url, '_blank');
 		}
 	}
 });

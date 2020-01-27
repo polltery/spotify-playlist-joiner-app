@@ -18,9 +18,11 @@
 		<!-- application -->
 		<div class="container" v-else>
 			<!-- playlist form -->
-			<label for="playlist1">Playlist 1 link:</label>
+			<label for="playlist1">Playlist 1 URL</label>
+			<button v-on:click="openPlaylist1" class="btn btn-success btn-sm">Open</button>
 			<input v-model="playlist1Url" type="text" class="form-control mb-3" id="playlist1" aria-describedby="playlist1">
-			<label for="playlist1">Playlist 2 link:</label>
+			<label for="playlist1">Playlist 2 URL</label>
+			<button v-on:click="openPlaylist2" class="btn btn-success btn-sm">Open</button>
 			<input v-model="playlist2Url" type="text" class="form-control mb-3" id="playlist2" aria-describedby="playlist2">
 			<!-- fetch controls -->
 			<button id="fetchPlaylists" v-on:click="fetchPlaylists" class="btn btn-success">Fetch playlists</button>
