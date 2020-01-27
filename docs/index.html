@@ -1,0 +1,120 @@
+<!doctype html>
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+</head>
+<body>
+	<!-- vue app -->
+	<div id="app">
+		
+		<!-- header -->
+		<div class="jumbotron">
+			<h1 class="display-4">{{appTitle}}</h1>
+		</div>
+
+		<!-- auth stuff -->
+		<div v-if="!isAuthCompleted()" class="container">
+			<button id="authButton" v-on:click="doAuth" class="btn btn-success">Connect to Spotify</button>
+		</div>
+
+		<!-- application -->
+		<div class="container" v-else>
+
+			<!-- playlist form -->
+			<label for="playlist1">Playlist 1 URL</label>
+			<button v-on:click="openPlaylist1" class="btn btn-outline-success btn-sm">Open</button>
+			<input v-model="playlist1Url" type="text" class="form-control mb-3" id="playlist1" aria-describedby="playlist1">
+			<label for="playlist1">Playlist 2 URL</label>
+			<button v-on:click="openPlaylist2" class="btn btn-outline-success btn-sm">Open</button>
+			<input v-model="playlist2Url" type="text" class="form-control mb-3" id="playlist2" aria-describedby="playlist2">
+			
+			<!-- fetch controls -->
+			<button id="fetchPlaylists" v-on:click="fetchPlaylists" class="btn btn-success">Fetch playlists</button>
+			<label for="showSongsFromPlaylist">Show all songs from playlists?</label>
+			<input id="showSongsFromPlaylist" v-model="showSongsFromPlaylist" type="checkbox">
+			
+			<!-- validation errors -->
+			<div v-show="playlistFetchErrors !== ''" class="alert alert-danger mt-3 mb-3" role="alert">
+				{{playlistFetchErrors}}
+			</div>
+			<div v-show="reAuthRequired" class="alert alert-warning mt-3 mb-3" role="alert">
+				<button id="authButton" v-on:click="doAuth" class="btn btn-success">Reconnect to Spotify</button>
+			</div>
+
+			<!-- playlist view -->
+			<div class="row" v-if="isFetchPlaylistsInProgress">
+				<div class="col-lg mt-3">
+					<h3>Fetching playlists...</h3>
+				</div>
+			</div>
+			<div v-else>
+				<div class="row mt-3" v-if="playlist1.tracks !== undefined | playlist2.tracks !== undefined">
+					<!-- playlist 1 -->
+					<div class="col-md" v-if="playlist1.tracks !== undefined">
+						<h3><a v-bind:href="playlist1.external_urls.spotify" target="_blank">{{playlist1.name}}</a></h3>
+						<ul class="list-group">
+							<li class="list-group-item" v-show="showSongsFromPlaylist" v-for="(item, index) in playlist1.tracks.items">{{index+1}}. <span v-for="artist in item.track.artists"><a v-bind:href="artist.external_urls.spotify" target="_blank" class="badge badge-light">{{artist.name}}</a></span> <a v-bind:href="item.track.external_urls.spotify" target="_blank">{{item.track.name}}</a></li>
+							<li class="list-group-item" v-show="!showSongsFromPlaylist">
+								Songs are hidden.
+							</li>
+						</ul>
+					</div>
+					<!-- playlist 2 -->
+					<div class="col-md" v-if="playlist2.tracks !== undefined">
+						<ul class="list-group">
+							<h3><a v-bind:href="playlist2.external_urls.spotify" target="_blank">{{playlist2.name}}</a></h3>
+							<li class="list-group-item" v-show="showSongsFromPlaylist" v-for="(item, index) in playlist2.tracks.items">{{index+1}}. <span v-for="artist in item.track.artists"><a v-bind:href="artist.external_urls.spotify" target="_blank" class="badge badge-light">{{artist.name}}</a></span> <a v-bind:href="item.track.external_urls.spotify" target="_blank">{{item.track.name}}</a></li>
+							<li class="list-group-item" v-show="!showSongsFromPlaylist">
+								Songs are hidden.
+							</li>
+						</ul>
+					</div>
+				</div>
+			
+				<!-- joined controls/list -->
+				<div class="row" v-show="isJoinPlaylistsInProgress">
+					<div class="col-lg">
+						<p>Joining playlists...</p>
+					</div>
+				</div>
+				<div class="row mt-3 form-group" v-if="!isJoinPlaylistsInProgress && (playlist1.tracks !== undefined | playlist2.tracks !== undefined)">
+					<div class="col-md-3">
+						<button id="joinPlaylists" v-on:click="joinPlaylists" class="btn btn-success">Join and preview playlist</button>
+					</div>
+					<div class="col-md-6">
+						<input v-model="joinedPlaylistName" type="text" class="form-control" id="joinedPlaylistName" aria-describedby="joinedPlaylistName" placeholder="Enter playlist name">
+					</div>
+					<div class="col-md-3">
+						<button id="createPlaylist" v-on:click="createPlaylist" class="btn btn-success">Add playlist to Spotify</button>
+					</div>
+				</div>
+				<div class="row">
+					<div v-show="joinedPlaylistErrors !== ''" class="alert alert-danger mt-3 mb-3" role="alert">
+						<div class="col-lg">
+						{{joinedPlaylistErrors}}
+						</div>
+					</div>
+				</div>
+				<div class="row" v-if="!isJoinPlaylistsInProgress && (joinedPlaylist.length > 0 && playlist1.name !== undefined && playlist2.name != undefined)">
+					<div class="col-lg">
+						<!-- merged playlist -->
+						<ul class="list-group mt-3">
+							<h3>{{playlist1.name}} + {{playlist2.name}}</h3>
+							<p>{{joinedPlaylist.length}} tracks found in common!</p>
+							<li class="list-group-item" v-for="(item, index) in joinedPlaylist">{{index+1}}. <span v-for="artist in item.artists"><a v-bind:href="artist.external_urls.spotify" target="_blank" class="badge badge-light">{{artist.name}}</a></span> <a v-bind:href="item.external_urls.spotify" target="_blank">{{item.name}}</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+</body>
+<script src="./app.config.js"></script> <!-- always first -->
+<!-- libs -->
+<script src="https://cdn.jsdelivr.net/npm/vue"></script> <!-- production -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> --> <!-- dev -->
+<script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
+<script src="./app.js"></script> <!-- always last -->
+</html>
