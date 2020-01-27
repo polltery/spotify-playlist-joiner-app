@@ -14,7 +14,7 @@ var config = {
 	clientId: "14364b72b3dd407aa3e4fdfc7121c680",
 	responseType: "token",
 	authUrl: "https://" + authConfig.host + authConfig.basePath,
-	redirectUri: "https://" + window.location.hostname + "/",
+	redirectUri: "https://polltery.github.io/spotify-playlist-joiner-app/",
 	accessToken: null,
 	tokenType: null,
 	expiresIn: null,
