@@ -5,7 +5,7 @@ var app = new Vue({
 	data: {
 		appTitle : config.appTitle,
 		playlist1Url : "37i9dQZF1DXec50AjHrNTq",
-		playlist2Url : "37i9dQZF1DX6RSJAsEDz7H",
+		playlist2Url : "3mrM0ZsJ9o5qFYJT6IdpoH",
 		playlistFetchErrors : "",
 		playlist1 : {},
 		playlist2 : {},
@@ -38,21 +38,10 @@ var app = new Vue({
 		// todo: fetch more than 100 items
 		fetchPlaylists: function(){
 			// todo: fetch using complete url, for now just use the ids
+			this.playlistFetchErrors = "";
 			if(this.playlist1Url !== "" && this.playlist2Url !== ""){
-				var url = config.apiUrl + "/playlists/" + this.playlist1Url;
-				this.$http.get(url, this.authHeaders).then(response => {
-					this.playlist1 = response.body;
-				}, response => {
-					console.error("There was an error while fetching " + url);
-					this.joinedPlaylistErrors = "Unable to fetch playlist data, try connecting to spotify again.";
-				});
-				url = config.apiUrl + "/playlists/" + this.playlist2Url;
-				this.$http.get(url, this.authHeaders).then(response => {
-					this.playlist2 = response.body;
-				}, response => {
-					console.error("There was an error while fetching " + url);
-					this.joinedPlaylistErrors = "Unable to fetch playlist data, try connecting to spotify again.";
-				});
+				this.fetchTracks(this.playlist1Url, '1');
+				this.fetchTracks(this.playlist2Url, '2');
 			}else{
 				this.playlistFetchErrors = "Both URLs are mandatory";
 			}
@@ -85,6 +74,33 @@ var app = new Vue({
 			}else{
 				this.joinedPlaylistErrors = "One of the playlist is missing tracks.";
 			}
+		},
+		fetchTracks: function(playlistId, playlistN){
+			url = config.apiUrl + "/playlists/" + playlistId;
+			this.$http.get(url).then(response => {
+				this['playlist' + playlistN] = response.body;
+				if(response.body.tracks.next !== null){
+					this.fetchReminaingTracks(response.body.tracks.next, playlistN);
+				}
+			}, response => {
+				console.error("There was an error while fetching " + url);
+				this.playlistFetchErrors += "\nUnable to fetch playlist data, try connecting to spotify again.";
+			});
+		},
+		fetchReminaingTracks: function(nextUrl, playlistN){
+			this.$http.get(nextUrl).then(response => {
+				this['playlist' + playlistN].tracks.items = this['playlist' + playlistN].tracks.items.concat(response.body.items);
+				if(response.body.next !== null){
+					this.fetchReminaingTracks(response.body.next, playlistN);
+				}
+			}, response => {
+				console.error("There was an error while fetching " + url);
+				this.playlistFetchErrors += "\nSomething went wrong while trying to fetch remaining tracks.";
+			});
 		}
 	}
+});
+
+Vue.http.interceptors.push(function(request) {
+	request.headers.set('Authorization', config.tokenType + " " + config.accessToken);
 });
