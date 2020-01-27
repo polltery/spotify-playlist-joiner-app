@@ -22,31 +22,40 @@
 			<input v-model="playlist1Url" type="text" class="form-control mb-3" id="playlist1" aria-describedby="playlist1">
 			<label for="playlist1">Playlist 2 ID: {{playlist2Url}}</label>
 			<input v-model="playlist2Url" type="text" class="form-control mb-3" id="playlist2" aria-describedby="playlist2">
+			<!-- fetch controls -->
 			<button id="fetchPlaylists" v-on:click="fetchPlaylists" class="btn btn-success">Fetch playlists</button>
+			<label for="showSongsFromPlaylist">Show all songs from playlists?</label>
+			<input id="showSongsFromPlaylist" v-model="showSongsFromPlaylist" type="checkbox">
 			<!-- validation errors -->
 			<div v-show="playlistFetchErrors !== ''" class="alert alert-danger mt-3 mb-3" role="alert">
 				{{playlistFetchErrors}}
 			</div>
 			<!-- playlist view -->
-			<div v-if="playlist1.tracks !== undefined | playlist2.tracks !== undefined" class="container mt-3 mb-3">
-				<div class="row">
+			<div class="container mt-3 mb-3">
+				<div class="row" v-if="playlist1.tracks !== undefined | playlist2.tracks !== undefined">
 					<!-- playlist 1 -->
 					<div class="col-md" v-if="playlist1.tracks !== undefined">
 						<h3>{{playlist1.name}}</h3>
 						<ul class="list-group mt-3">
-							<li class="list-group-item" v-for="(item, index) in playlist1.tracks.items">{{index+1}}. {{item.track.name}}</li>
+							<li class="list-group-item" v-show="showSongsFromPlaylist" v-for="(item, index) in playlist1.tracks.items">{{index+1}}. {{item.track.name}}</li>
+							<li class="list-group-item" v-show="!showSongsFromPlaylist">
+								Songs are hidden.
+							</li>
 						</ul>
 					</div>
 					<!-- playlist 2 -->
 					<div class="col-md" v-if="playlist2.tracks !== undefined">
 						<ul class="list-group mt-3">
 							<h3>{{playlist2.name}}</h3>
-							<li class="list-group-item" v-for="(item, index) in playlist2.tracks.items">{{index+1}}. {{item.track.name}}</li>
+							<li class="list-group-item" v-show="showSongsFromPlaylist" v-for="(item, index) in playlist2.tracks.items">{{index+1}}. {{item.track.name}}</li>
+							<li class="list-group-item" v-show="!showSongsFromPlaylist">
+								Songs are hidden.
+							</li>
 						</ul>
 					</div>
 				</div>
 				<div class="row">
-					<button id="joinPlaylists" v-on:click="joinPlaylists" class="btn btn-success mt-3">Join playlists</button>
+					<button v-if="playlist1.tracks !== undefined | playlist2.tracks !== undefined" id="joinPlaylists" v-on:click="joinPlaylists" class="btn btn-success mt-3">Join playlists</button>
 				</div>
 				<div v-show="joinedPlaylistErrors !== ''" class="alert alert-danger mt-3 mb-3" role="alert">
 					{{joinedPlaylistErrors}}

@@ -11,7 +11,8 @@ var app = new Vue({
 		playlist2 : {},
 		authHeaders : {},
 		joinedPlaylist : [],
-		joinedPlaylistErrors : ""
+		joinedPlaylistErrors : "",
+		showSongsFromPlaylist : false,
 	},
 	methods: {
 		doAuth: function(){
@@ -34,13 +35,13 @@ var app = new Vue({
 				return false;
 			}
 		},
+		// todo: fetch more than 100 items
 		fetchPlaylists: function(){
 			// todo: fetch using complete url, for now just use the ids
 			if(this.playlist1Url !== "" && this.playlist2Url !== ""){
 				var url = config.apiUrl + "/playlists/" + this.playlist1Url;
 				this.$http.get(url, this.authHeaders).then(response => {
 					this.playlist1 = response.body;
-					this.playlist1Url = response.body.name;
 				}, response => {
 					console.error("There was an error while fetching " + url);
 					this.joinedPlaylistErrors = "Unable to fetch playlist data, try connecting to spotify again.";
@@ -48,9 +49,9 @@ var app = new Vue({
 				url = config.apiUrl + "/playlists/" + this.playlist2Url;
 				this.$http.get(url, this.authHeaders).then(response => {
 					this.playlist2 = response.body;
-					this.playlist2Url = response.body.name;
 				}, response => {
 					console.error("There was an error while fetching " + url);
+					this.joinedPlaylistErrors = "Unable to fetch playlist data, try connecting to spotify again.";
 				});
 			}else{
 				this.playlistFetchErrors = "Both URLs are mandatory";
@@ -67,6 +68,7 @@ var app = new Vue({
 		},
 		joinPlaylists: function(){
 			this.joinedPlaylistErrors = "";
+			this.joinedPlaylist = [];
 			if(this.playlist1.tracks !== undefined && this.playlist2.tracks !== undefined){
 				var list1 = this.playlist1.tracks.items;
 				var list2 = this.playlist2.tracks.items;
