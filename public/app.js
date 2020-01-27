@@ -15,13 +15,17 @@ var app = new Vue({
 		showSongsFromPlaylist : false,
 		reAuthRequired : false,
 		isJoinPlaylistsInProgress : false,
-		isFetchPlaylist1InPrgress : false,
-		isFetchPlaylist2InPrgress : false,
-		isFetchPlaylistsInProgress : this.isFetchPlaylist1InPrgress && this.isFetchPlaylist2InPrgress
+		isFetchPlaylist1InProgress : false,
+		isFetchPlaylist2InProgress : false,
+		isFetchPlaylistsInProgress : false,
+		user : {},
+		joinedPlaylistId : "",
+		joinedPlaylistExternalUrl : "",
+		joinedPlaylistName : ""
 	},
 	methods: {
 		doAuth: function(){
-			window.location.href = config.authUrl+"?client_id="+config.clientId+"&redirect_uri="+config.redirectUri+"&response_type="+config.responseType;
+			window.location.href = config.authUrl+"?client_id="+config.clientId+"&redirect_uri="+config.redirectUri+"&response_type="+config.responseType+"&scope="+config.scope;
 		},
 		isAuthCompleted: function(){
 			// todo: refactor to check localStorage first
@@ -79,6 +83,7 @@ var app = new Vue({
 			this.joinedPlaylistErrors = "";
 			this.joinedPlaylist = [];
 			this.isJoinPlaylistsInProgress = true;
+			this.joinedPlaylistName = this.playlist1.name + " + " + this.playlist2.name;
 			if(this.playlist1.tracks !== undefined && this.playlist2.tracks !== undefined){
 				var list1 = this.playlist1.tracks.items;
 				var list2 = this.playlist2.tracks.items;
@@ -98,14 +103,15 @@ var app = new Vue({
 			this.isJoinPlaylistsInProgress = false;
 		},
 		fetchTracks: function(playlistId, playlistN){
-			this['isFetchPlaylist' + playlistN + 'InPrgress'] = true;
+			this['isFetchPlaylist' + playlistN + 'InProgress'] = true;
 			url = config.apiUrl + "/playlists/" + playlistId;
 			this.$http.get(url).then(response => {
 				this['playlist' + playlistN] = response.body;
 				if(response.body.tracks.next !== null){
 					this.fetchReminaingTracks(response.body.tracks.next, playlistN);
 				}else{
-					this['isFetchPlaylist' + playlistN + 'InPrgress'] = false;
+					this['isFetchPlaylist' + playlistN + 'InProgress'] = false;
+					this.isFetchPlaylistsInProgress = this.isFetchPlaylist1InProgress || this.isFetchPlaylist2InProgress;
 				}
 			}, response => {
 				if(response.status === 401){
@@ -122,7 +128,8 @@ var app = new Vue({
 				if(response.body.next !== null){
 					this.fetchReminaingTracks(response.body.next, playlistN);
 				}else{
-					this['isFetchPlaylist' + playlistN + 'InPrgress'] = false;
+					this['isFetchPlaylist' + playlistN + 'InProgress'] = false;
+					this.isFetchPlaylistsInProgress = this.isFetchPlaylist1InProgress ||this.isFetchPlaylist2InProgress;
 				}
 			}, response => {
 				console.error("There was an error while fetching " + url);
@@ -136,7 +143,51 @@ var app = new Vue({
 			window.open(this.playlist2Url, '_blank');
 		},
 		createPlaylist: function(){
-
+			var url = config.apiUrl + "/me";
+			this.$http.get(url).then(response => {
+				this.user = response.body;
+				url = config.apiUrl + "/users/" + this.user.id + "/playlists";
+				var body = {
+					name: this.joinedPlaylistName,
+					description: "Joined playlist created by Spotify Joiner Playlist App."
+				};
+				this.$http.post(url, body).then(response => {
+					this.joinedPlaylistId = response.body.id;
+					url += "/" + response.body.id + "/tracks";
+					this.joinedPlaylistExternalUrl = response.body.external_urls.spotify;
+					var uriList = [];
+					for(let i = 0; i < this.joinedPlaylist.length; i++){
+						uriList.push(this.joinedPlaylist[i].uri);
+						if((i+1) % 100 === 0){
+							this.addTracksToJoinedPlaylist(url, uriList);
+							uriList = [];
+						}
+					}
+					if(uriList.length > 0){
+						this.addTracksToJoinedPlaylist(url, uriList);
+					}
+				}, response => {
+					console.error("There was an error while posting " + url);
+					this.joinedPlaylistErrors += "\nSomething went wrong while trying to create playlist.";
+				});
+			}, response => {
+				console.error("There was an error while fetching " + url);
+				this.joinedPlaylistErrors += "\nSomething went wrong while trying to fetch user details (create playlist).";
+			});
+		},
+		addTracksToJoinedPlaylist: function(url, uriList){
+			console.log("Adding tracks...");
+			console.log(uriList);
+			var body = {
+				uris: uriList
+			};
+			this.$http.post(url, body).then(response => {
+				console.log("Track added.");
+				console.log(response.body);
+			}, response => {
+				console.error("There was an error while fetching " + url);
+				this.joinedPlaylistErrors += "\nSomething went wrong while trying to add songs to new playlist (create playlist).";
+			});
 		}
 	}
 });

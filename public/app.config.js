@@ -5,8 +5,7 @@ var apiConfig = {
 
 var authConfig = {
 	host: "accounts.spotify.com",
-	basePath: "/authorize",
-	params: ["client_id", "redirect_uri", "response_type"]
+	basePath: "/authorize"
 };
 
 var config = {
@@ -18,5 +17,6 @@ var config = {
 	redirectUri: "http://" + window.location.hostname + ":" + window.location.port + "/",
 	accessToken: null,
 	tokenType: null,
-	expiresIn: null
+	expiresIn: null,
+	scope: "playlist-modify-public"
 };
