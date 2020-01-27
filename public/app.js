@@ -13,7 +13,11 @@ var app = new Vue({
 		joinedPlaylist : [],
 		joinedPlaylistErrors : "",
 		showSongsFromPlaylist : false,
-		reAuthRequired : false
+		reAuthRequired : false,
+		isJoinPlaylistsInProgress : false,
+		isFetchPlaylist1InPrgress : false,
+		isFetchPlaylist2InPrgress : false,
+		isFetchPlaylistsInProgress : this.isFetchPlaylist1InPrgress && this.isFetchPlaylist2InPrgress
 	},
 	methods: {
 		doAuth: function(){
@@ -74,6 +78,7 @@ var app = new Vue({
 		joinPlaylists: function(){
 			this.joinedPlaylistErrors = "";
 			this.joinedPlaylist = [];
+			this.isJoinPlaylistsInProgress = true;
 			if(this.playlist1.tracks !== undefined && this.playlist2.tracks !== undefined){
 				var list1 = this.playlist1.tracks.items;
 				var list2 = this.playlist2.tracks.items;
@@ -90,13 +95,17 @@ var app = new Vue({
 			}else{
 				this.joinedPlaylistErrors = "One of the playlist is missing tracks.";
 			}
+			this.isJoinPlaylistsInProgress = false;
 		},
 		fetchTracks: function(playlistId, playlistN){
+			this['isFetchPlaylist' + playlistN + 'InPrgress'] = true;
 			url = config.apiUrl + "/playlists/" + playlistId;
 			this.$http.get(url).then(response => {
 				this['playlist' + playlistN] = response.body;
 				if(response.body.tracks.next !== null){
 					this.fetchReminaingTracks(response.body.tracks.next, playlistN);
+				}else{
+					this['isFetchPlaylist' + playlistN + 'InPrgress'] = false;
 				}
 			}, response => {
 				if(response.status === 401){
@@ -112,6 +121,8 @@ var app = new Vue({
 				this['playlist' + playlistN].tracks.items = this['playlist' + playlistN].tracks.items.concat(response.body.items);
 				if(response.body.next !== null){
 					this.fetchReminaingTracks(response.body.next, playlistN);
+				}else{
+					this['isFetchPlaylist' + playlistN + 'InPrgress'] = false;
 				}
 			}, response => {
 				console.error("There was an error while fetching " + url);
@@ -123,6 +134,9 @@ var app = new Vue({
 		},
 		openPlaylist2: function(){
 			window.open(this.playlist2Url, '_blank');
+		},
+		createPlaylist: function(){
+
 		}
 	}
 });
