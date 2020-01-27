@@ -89,6 +89,9 @@
 						<button id="createPlaylist" v-on:click="createPlaylist" class="btn btn-success">Add playlist to Spotify</button>
 					</div>
 				</div>
+				<div class="row mt-3" v-show="joinedPlaylistExternalUrl !== ''">
+					<h3><a v-bind:href="joinedPlaylistExternalUrl" target="_blank">Your joined playlist is ready!</a></h3>
+				</div>
 				<div class="row">
 					<div v-show="joinedPlaylistErrors !== ''" class="alert alert-danger mt-3 mb-3" role="alert">
 						<div class="col-lg">
@@ -111,7 +114,7 @@
 		</div>
 	</div>
 </body>
-<script src="./app.config.js"></script> <!-- always first -->
+<script src="./config.js"></script> <!-- always first -->
 <!-- libs -->
 <script src="https://cdn.jsdelivr.net/npm/vue"></script> <!-- production -->
 <!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> --> <!-- dev -->

@@ -184,6 +184,9 @@ var app = new Vue({
 			this.$http.post(url, body).then(response => {
 				console.log("Track added.");
 				console.log(response.body);
+				if(uriList.length < 100){
+					window.open(this.joinedPlaylistExternalUrl, "_blank"); 
+				}
 			}, response => {
 				console.error("There was an error while fetching " + url);
 				this.joinedPlaylistErrors += "\nSomething went wrong while trying to add songs to new playlist (create playlist).";
