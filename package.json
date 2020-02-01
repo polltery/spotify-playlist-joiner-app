@@ -1,0 +1,34 @@
+{
+  "name": "spotify-playlist-joiner",
+  "version": "1.0.0",
+  "description": "A web app that helps joining multipe spotify playlists together",
+  "main": "docs/app.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "build": "bash build.sh $ENV",
+    "production": "bash build.sh PROD"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/polltery/spotify-playlist-joiner-app.git"
+  },
+  "keywords": [
+    "spotify",
+    "web",
+    "app",
+    "utility",
+    "vue.js"
+  ],
+  "author": "Balraj Singh Bains",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/polltery/spotify-playlist-joiner-app/issues"
+  },
+  "homepage": "https://github.com/polltery/spotify-playlist-joiner-app#readme"
+}

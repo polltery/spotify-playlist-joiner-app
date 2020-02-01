@@ -14,7 +14,7 @@ var config = {
 	clientId: "14364b72b3dd407aa3e4fdfc7121c680",
 	responseType: "token",
 	authUrl: "https://" + authConfig.host + authConfig.basePath,
-	redirectUri: "http://" + window.location.hostname + ":" + window.location.port + "/",
+	redirectUri: "#[REDIRECT_URL]",
 	accessToken: null,
 	tokenType: null,
 	expiresIn: null,
