@@ -1,5 +1,16 @@
 /*jshint esversion: 6*/
 document.title = config.appTitle;
+
+Vue.component('playlist-viewer', {
+	props: ['source','viewcondition'],
+	template: '<div class="col-md" v-if="source.tracks !== undefined"><h3><a v-bind:href="source.external_urls.spotify" target="_blank">{{source.name}}</a></h3><ul class="list-group"><li class="list-group-item" v-show="viewcondition" v-for="(item, index) in source.tracks.items">{{index+1}}. <span v-for="artist in item.track.artists"><a v-bind:href="artist.external_urls.spotify" target="_blank" class="badge badge-light">{{artist.name}}</a></span> <a v-bind:href="item.track.external_urls.spotify" target="_blank">{{item.track.name}}</a></li><li class="list-group-item" v-show="!viewcondition">Songs are hidden.</li></ul></div>'
+});
+
+Vue.component('playlist-url-input', {
+	props: ['id','label','onclickfn','value'],
+	template: '<div><label v-bind:for="id">{{label}}</label><button v-on:click="$emit(\'onclickfn\')" class="btn btn-outline-success btn-sm">Open</button><input v-bind:value="value" v-on:input="$emit(\'input\',$event.target.value)" type="text" class="form-control mb-3" v-bind:id="id"></div>'
+});
+
 var app = new Vue({
 	el: '#app',
 	data: {

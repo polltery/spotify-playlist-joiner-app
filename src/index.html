@@ -22,12 +22,9 @@
 		<div class="container" v-else>
 
 			<!-- playlist form -->
-			<label for="playlist1">Playlist 1 URL</label>
-			<button v-on:click="openPlaylist1" class="btn btn-outline-success btn-sm">Open</button>
-			<input v-model="playlist1Url" type="text" class="form-control mb-3" id="playlist1" aria-describedby="playlist1">
-			<label for="playlist1">Playlist 2 URL</label>
-			<button v-on:click="openPlaylist2" class="btn btn-outline-success btn-sm">Open</button>
-			<input v-model="playlist2Url" type="text" class="form-control mb-3" id="playlist2" aria-describedby="playlist2">
+			<playlist-url-input id="playlist1" label="Playlist 1 URL" v-on:onclickfn="openPlaylist1" v-model="playlist1Url"></playlist-url-input>
+			
+			<playlist-url-input id="playlist2" label="Playlist 2 URL" v-on:onclickfn="openPlaylist2" v-model="playlist2Url"></playlist-url-input>
 			
 			<!-- fetch controls -->
 			<button id="fetchPlaylists" v-on:click="fetchPlaylists" class="btn btn-success">Fetch playlists</button>
@@ -51,25 +48,9 @@
 			<div v-else>
 				<div class="row mt-3" v-if="playlist1.tracks !== undefined | playlist2.tracks !== undefined">
 					<!-- playlist 1 -->
-					<div class="col-md" v-if="playlist1.tracks !== undefined">
-						<h3><a v-bind:href="playlist1.external_urls.spotify" target="_blank">{{playlist1.name}}</a></h3>
-						<ul class="list-group">
-							<li class="list-group-item" v-show="showSongsFromPlaylist" v-for="(item, index) in playlist1.tracks.items">{{index+1}}. <span v-for="artist in item.track.artists"><a v-bind:href="artist.external_urls.spotify" target="_blank" class="badge badge-light">{{artist.name}}</a></span> <a v-bind:href="item.track.external_urls.spotify" target="_blank">{{item.track.name}}</a></li>
-							<li class="list-group-item" v-show="!showSongsFromPlaylist">
-								Songs are hidden.
-							</li>
-						</ul>
-					</div>
+					<playlist-viewer v-bind:source="playlist1" v-bind:viewcondition="showSongsFromPlaylist"></playlist-viewer>
 					<!-- playlist 2 -->
-					<div class="col-md" v-if="playlist2.tracks !== undefined">
-						<ul class="list-group">
-							<h3><a v-bind:href="playlist2.external_urls.spotify" target="_blank">{{playlist2.name}}</a></h3>
-							<li class="list-group-item" v-show="showSongsFromPlaylist" v-for="(item, index) in playlist2.tracks.items">{{index+1}}. <span v-for="artist in item.track.artists"><a v-bind:href="artist.external_urls.spotify" target="_blank" class="badge badge-light">{{artist.name}}</a></span> <a v-bind:href="item.track.external_urls.spotify" target="_blank">{{item.track.name}}</a></li>
-							<li class="list-group-item" v-show="!showSongsFromPlaylist">
-								Songs are hidden.
-							</li>
-						</ul>
-					</div>
+					<playlist-viewer v-bind:source="playlist2" v-bind:viewcondition="showSongsFromPlaylist"></playlist-viewer>
 				</div>
 			
 				<!-- joined controls/list -->
