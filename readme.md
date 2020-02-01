@@ -1,6 +1,13 @@
+# Spotify Playlist Joiner App
+
+A simple app to combine songs from 2 different playlists into one single playlist.
+
+### How to build?
+
 for local development (unix systems)
-1. first run `ENV=DEV npm build`
-2. then `npm start`
+1. first run `npm run build`
+2. then `npm run start`
+3. build for production `npm run production`
 
 for local development (windows)
 1. copy paste all files from `src/.` to `docs/`
