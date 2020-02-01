@@ -9,7 +9,6 @@ var app = new Vue({
 		playlistFetchErrors : "",
 		playlist1 : {},
 		playlist2 : {},
-		authHeaders : {},
 		joinedPlaylist : [],
 		joinedPlaylistErrors : "",
 		showSongsFromPlaylist : false,
@@ -34,11 +33,6 @@ var app = new Vue({
 				config.accessToken = hashParams.access_token;
 				config.tokenType = hashParams.token_type;
 				config.expiresIn = hashParams.expires_in;
-				this.authHeaders = {
-					headers: {
-						Authorization: config.tokenType + " " + config.accessToken
-					}
-				};
 				return true;
 			}else{
 				return false;
