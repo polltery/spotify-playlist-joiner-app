@@ -45,7 +45,7 @@
 			<!-- playlist view -->
 			<div class="row" v-if="isFetchPlaylistsInProgress">
 				<div class="col-lg mt-3">
-					<h3>Fetching playlists...</h3>
+					<h3>Fetching Songs: {{fetchedTracks}}/{{totalTracks}}</h3>
 				</div>
 			</div>
 			<div v-else>

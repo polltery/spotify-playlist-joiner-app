@@ -17,6 +17,8 @@ var app = new Vue({
 		isFetchPlaylist1InProgress : false,
 		isFetchPlaylist2InProgress : false,
 		isFetchPlaylistsInProgress : false,
+		fetchedTracks : 0,
+		totalTracks : 0,
 		user : {},
 		joinedPlaylistId : "",
 		joinedPlaylistExternalUrl : "",
@@ -27,7 +29,6 @@ var app = new Vue({
 			window.location.href = config.authUrl+"?client_id="+config.clientId+"&redirect_uri="+config.redirectUri+"&response_type="+config.responseType+"&scope="+config.scope;
 		},
 		isAuthCompleted: function(){
-			// todo: refactor to check localStorage first
 			var hashParams = this.getHashParams();
 			if(hashParams.access_token !== undefined){
 				config.accessToken = hashParams.access_token;
@@ -38,13 +39,13 @@ var app = new Vue({
 				return false;
 			}
 		},
-		// todo: fetch more than 100 items
 		fetchPlaylists: function(){
-			// todo: fetch using complete url, for now just use the ids
 			this.playlistFetchErrors = "";
 			this.playlist1 = {};
 			this.playlist2 = {};
 			this.joinedPlaylist = [];
+			this.totalTracks = 0;
+			this.fetchedTracks = 0;
 			if(this.playlist1Url !== "" && this.playlist2Url !== ""){
 				var idMatch1 = [];
 				var idMatch2 = [];
@@ -98,9 +99,11 @@ var app = new Vue({
 		},
 		fetchTracks: function(playlistId, playlistN){
 			this['isFetchPlaylist' + playlistN + 'InProgress'] = true;
+			this.isFetchPlaylistsInProgress = true;
 			url = config.apiUrl + "/playlists/" + playlistId;
 			this.$http.get(url).then(response => {
 				this['playlist' + playlistN] = response.body;
+				this.totalTracks += response.body.tracks.total;
 				if(response.body.tracks.next !== null){
 					this.fetchReminaingTracks(response.body.tracks.next, playlistN);
 				}else{
@@ -119,6 +122,7 @@ var app = new Vue({
 		fetchReminaingTracks: function(nextUrl, playlistN){
 			this.$http.get(nextUrl).then(response => {
 				this['playlist' + playlistN].tracks.items = this['playlist' + playlistN].tracks.items.concat(response.body.items);
+				this.fetchedTracks += 100;
 				if(response.body.next !== null){
 					this.fetchReminaingTracks(response.body.next, playlistN);
 				}else{
