@@ -12,7 +12,8 @@
   "scripts": {
     "start": "node app.js",
     "build": "bash build.sh $ENV",
-    "production": "bash build.sh PROD"
+    "production": "bash build.sh PROD",
+    "deploy" : "bash build.sh && node app.js"
   },
   "repository": {
     "type": "git",
