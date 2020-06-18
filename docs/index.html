@@ -33,7 +33,7 @@
 
 			<!-- fetch controls -->
 			<button id="fetchPlaylists" v-on:click="fetchPlaylists" class="btn btn-success"
-				v-if="!isFetchPlaylistsInProgress">Fetch playlists</button>
+				:disabled="isFetchPlaylistsInProgress">Fetch playlists</button>
 			<label for="showSongsFromPlaylist">Show all songs from playlists?</label>
 			<input id="showSongsFromPlaylist" v-model="showSongsFromPlaylist" type="checkbox">
 
