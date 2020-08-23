@@ -27,3 +27,6 @@ ENV=PROD
 VUE_URL=https://cdn.jsdelivr.net/npm/vue
 REDIRECT_URL=https://polltery.github.io/spotify-playlist-joiner-app/
 ```
+# Contributing
+
+Please only send changes to `/src` folder.
