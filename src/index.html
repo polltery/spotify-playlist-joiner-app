@@ -11,6 +11,7 @@
 		<!-- header -->
 		<div class="jumbotron">
 			<h1 class="display-4">{{appTitle}}</h1>
+			<p class="display-5">Combine common songs from 2 different playlists</p>
 		</div>
 
 		<!-- auth stuff -->
@@ -27,7 +28,7 @@
 			<playlist-url-input id="playlist2" label="Playlist 2 URL" v-on:onclickfn="openPlaylist2" v-model="playlist2Url"></playlist-url-input>
 			
 			<!-- fetch controls -->
-			<button id="fetchPlaylists" v-on:click="fetchPlaylists" class="btn btn-success">Fetch playlists</button>
+			<button id="fetchPlaylists" v-on:click="fetchPlaylists" class="btn btn-success" :disabled="isFetchPlaylistsInProgress">Fetch playlists</button>
 			<label for="showSongsFromPlaylist">Show all songs from playlists?</label>
 			<input id="showSongsFromPlaylist" v-model="showSongsFromPlaylist" type="checkbox">
 			
