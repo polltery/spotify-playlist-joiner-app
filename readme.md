@@ -7,6 +7,7 @@ A simple app to combine songs from 2 different playlists into one single playlis
 Make sure you have `node` and `npm` installed.
 
 for local development (unix systems)
+0. To setup the libraries first run `npm install`
 1. first run `npm run build`
 2. then `npm run start`
 
@@ -14,6 +15,7 @@ for production builds
 1. install `npm install minify -g`
 2. install `npm install html-minifier -g`
 3. build for production `npm run production`
+4. then `npm run start`
 
 for local development (windows)
 1. copy paste all files from `src/.` to `docs/`
