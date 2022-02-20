@@ -20,7 +20,7 @@ BACK_PID=$!
 wait $BACK_PID
 
 if [[ $ENV == "PROD" ]]; then
-	sed -i -e 's/\#\[VUE\_URL\]/https:\/\/cdn\.jsdelivr\.net\/npm\/vue/g' temp/index.html
+	sed -i -e 's/\#\[VUE\_URL\]/https:\/\/cdn.jsdelivr.net\/npm\/vue@2.6.14\/dist\/vue.min.js/g' temp/index.html
 	sed -i -e 's/\#\[REDIRECT\_URL\]/https\:\/\/polltery\.github\.io\/spotify\-playlist\-joiner\-app\//g' temp/config.js
 	minify temp/config.js > docs/config.js
 	minify temp/app.js > docs/app.js
