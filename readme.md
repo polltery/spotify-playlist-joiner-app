@@ -2,6 +2,8 @@
 
 A simple app to combine songs from 2 different playlists into one single playlist.
 
+![App preview](preview.png)
+
 ### How to build?
 
 Make sure you have `node` and `npm` installed.
